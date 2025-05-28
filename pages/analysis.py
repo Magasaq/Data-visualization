@@ -27,8 +27,7 @@ avg_rooms = df["Rooms"].mean()
 total_properties = df.shape[0]
 
 # Calculate Price per Square Meter
-df["Price_per_sqm"] = df["Price"] / df["Landsize"].replace(0, np.nan)  # avoid division by zero
-df["Price_per_sqm"].fillna(0, inplace=True)
+df["Price_per_sqm"] = np.where(df["Landsize"] > 0, df["Price"] / df["Landsize"], np.nan)
 
 layout = dbc.Container([
     html.H2("Melbourne Housing Market Analysis", className="mb-4"),
@@ -236,7 +235,7 @@ def update_analysis(region, property_type):
     price_sqm_fig.update_layout(xaxis_tickangle=-45)
 
     # Correlation matrix heatmap
-    numeric_cols = ["Price", "Rooms", "Distance", "Bedroom2", "Bathroom", "Car", "Landsize", "Landsize", "Price_per_sqm"]
+    numeric_cols = ["Price", "Rooms", "Distance", "Bedroom2", "Bathroom", "Car", "Landsize", "Price_per_sqm"]
     corr_df = filtered[numeric_cols].corr()
     corr_fig = px.imshow(
         corr_df,
